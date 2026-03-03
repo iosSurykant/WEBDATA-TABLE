@@ -13,6 +13,7 @@ const { Parser } = require("json2csv");
 const DownloadCorrectedCsv = async (req, res) => {
   try {
     const { taskId } = req.params;
+    console.log(taskId)
     const task = await Assigndata.findOne({ where: { id: taskId } });
     if (!task) {
       return res.status(404).json({ message: "Task not found" });

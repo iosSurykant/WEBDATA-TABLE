@@ -575,10 +575,14 @@ const UserCorrectionData = () => {
     const containerHeight = imageContainerRef?.current?.offsetHeight;
 
     // Calculate the zoom level based on the container size and the selected area size
-    const zoomLevel = Math.min(
-      containerWidth / width,
-      containerHeight / height
-    );
+    // ✅ Calculate zoom
+  const calculatedZoom = Math.min(
+    containerWidth / width,
+    containerHeight / height
+  );
+
+  // ✅ Prevent zoom-out
+  const zoomLevel = Math.max(1, calculatedZoom);
 
     // Calculate the scroll position to center the selected area
     const scrollX =
@@ -602,7 +606,7 @@ const UserCorrectionData = () => {
   const onCompleteHandler = async () => {
     try {
       const response = await axios.get(
-        `http://${window.SERVER_IP}/download/correctedCsv/${taskId}`,
+        `${window.SERVER_IP}/download/correctedCsv/${taskId}`,
         {
           headers: {
             token: token,
@@ -611,7 +615,7 @@ const UserCorrectionData = () => {
       );
 
       await axios.post(
-        `http://${window.SERVER_IP}/taskupdation/${parseInt(
+        `${window.SERVER_IP}/taskupdation/${parseInt(
           currentTaskData?.id
         )}`,
         {

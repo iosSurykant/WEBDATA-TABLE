@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaCloudDownloadAlt } from "react-icons/fa";
 import axios from "axios";
-import { REACT_APP_IP } from "../services/common";
+import { REACT_APP_IP,SERVER_IP } from "../services/common";
 const token = JSON.parse(localStorage.getItem("userData"));
 
 const DeactivateModal = ({ isOpen, onClose, taskId }) => {
@@ -12,7 +12,7 @@ const DeactivateModal = ({ isOpen, onClose, taskId }) => {
     try {
       setErrorLoading(true);
       const response = await axios.get(
-        `http://${REACT_APP_IP}:4000/download/errorCorrectedCsv/${taskId}`,
+        `${window.SERVER_IP}/download/errorCorrectedCsv/${taskId}`,
         {
           responseType: "blob", // Important for handling binary data
           headers: {
