@@ -13,7 +13,7 @@ const { Parser } = require("json2csv");
 const DownloadCorrectedCsv = async (req, res) => {
   try {
     const { taskId } = req.params;
-    console.log(taskId)
+    // console.log(taskId)
     const task = await Assigndata.findOne({ where: { id: taskId } });
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
@@ -38,12 +38,28 @@ const DownloadCorrectedCsv = async (req, res) => {
     const { startIndex } = fileData;
     const { csvTableName } = template;
 
+    console.log(startIndex)
+    // console.log(csvTableName)
+
     const data = await sequelize.query(
-      `SELECT * FROM ${csvTableName} WHERE id >= ${startIndex}`,
+      `SELECT ${csvTableName}.*, errortables.Corrected, errortables.CorrectedBy 
+      FROM ${csvTableName}
+      JOIN errortables
+      WHERE ${csvTableName}.id = errortables.parentId AND 
+      ${csvTableName}.id >= ${startIndex} AND 
+      ${fileId}=errortables.fileId`,
       {
         type: QueryTypes.SELECT,
       }
     );
+    // const data = await sequelize.query(
+    //   `SELECT * FROM ${csvTableName} WHERE id >= ${startIndex}`,
+    //   {
+    //     type: QueryTypes.SELECT,
+    //   }
+    // );
+
+    // console.log(data)
 
     if (!data || data.length === 0) {
       return res.status(404).json({ error: "No data available to download" });
