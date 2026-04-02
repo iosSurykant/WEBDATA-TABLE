@@ -67,6 +67,7 @@ const UserCorrectionData = () => {
   );
   const [loading, setLoading] = useState(false);
   const [totalData, setTotalData] = useState(0);
+  const [needChecking, setNeedChecking] = useState(false)
   const task = JSON.parse(localStorage.getItem("taskdata"));
   const navigate = useNavigate();
   console.log(window.APP_IP);
@@ -250,6 +251,8 @@ const UserCorrectionData = () => {
     }
   }, [currentData, currIndex]);
 
+  console.log(currentIndex)
+
   useEffect(() => {
     setLoading(true);
     const req = async () => {
@@ -262,6 +265,8 @@ const UserCorrectionData = () => {
           },
         }
       );
+      setNeedChecking(response?.data?.mainData?.Need_Checking==0?false:true)
+      console.log(response?.data?.mainData?.Need_Checking===0?false:true)
       setCurrentData(response?.data?.mainData);
       setSubData(response?.data?.subData);
       setTotalData(response?.data?.errorCount);
@@ -680,6 +685,14 @@ const UserCorrectionData = () => {
     }
     setCurrIndex(response?.updatedIndex);
   };
+
+// console.log(currentData?.Need_Checking)
+  useEffect(() => {
+    
+  
+    
+  }, [currentIndex])
+  
   return (
     <>
       {!popUp && (
@@ -791,6 +804,8 @@ const UserCorrectionData = () => {
                       taskId={taskId}
                       nextHandler={nextHandler}
                       currIndex={currIndex}
+                      setNeedChecking={setNeedChecking}
+                      needChecking={needChecking}
                       // csvData={csvData}
                       // tableData={tableData}
                       // currentData={currentData}

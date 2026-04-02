@@ -73,7 +73,7 @@ exports.viewDuplicates = async (req, res) => {
   
       const imageCol = template.imageColName; // Corrected variable
   
-      console.log("Template ID:", templateId);
+      // console.log("Template ID:", templateId);
   
       return res.json({ success: true, imageCol: imageCol });
   

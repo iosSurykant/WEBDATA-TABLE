@@ -35,7 +35,7 @@ function groupByPrimaryKey(arr) {
 const getCsvData = async (req, res) => {
   try {
     const { taskId } = req.params;
-
+    console.log(taskId)
     // Fetch 'fileId' and 'currentIndex' in a single query
     const assignData = await Assigndata.findByPk(taskId, {
       attributes: ["fileId", "currentIndex", "templeteId"], // Only fetch necessary columns

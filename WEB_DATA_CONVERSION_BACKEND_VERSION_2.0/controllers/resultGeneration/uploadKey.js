@@ -31,7 +31,7 @@ exports.uploadKey = (req, res, next) => {
       data.push(row);
     })
     .on("end", () => {
-      console.log("Data extracted successfully:", data);
+      // console.log("Data extracted successfully:", data);
       res.status(200).json({ data });
     })
     .on("error", (err) => {

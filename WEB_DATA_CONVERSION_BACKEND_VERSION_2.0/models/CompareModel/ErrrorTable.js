@@ -20,6 +20,10 @@ const ErrorTable = sequelize.define("errorTable", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  Need_Checking:{
+    type: Sequelize.STRING,
+    allowNull:false
+  },
   parentId: {
     type: Sequelize.INTEGER,
     allowNull: false,

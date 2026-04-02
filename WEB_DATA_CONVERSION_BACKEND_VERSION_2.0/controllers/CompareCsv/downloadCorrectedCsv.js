@@ -9,7 +9,6 @@ const csvToJson = require("../../services/csv_to_json");
 const jsonToCsv = require("../../services/json_to_csv");
 const { Parser } = require("json2csv");
 
-
 const DownloadCorrectedCsv = async (req, res) => {
   try {
     const { taskId } = req.params;
@@ -38,11 +37,14 @@ const DownloadCorrectedCsv = async (req, res) => {
     const { startIndex } = fileData;
     const { csvTableName } = template;
 
-    console.log(startIndex)
+    // console.log(startIndex)
     // console.log(csvTableName)
 
     const data = await sequelize.query(
-      `SELECT ${csvTableName}.*, errortables.Corrected, errortables.CorrectedBy 
+      `SELECT ${csvTableName}.*, errortables.Corrected, errortables.CorrectedBy, CASE 
+        WHEN errortables.Need_Checking = 1 THEN 'Yes'
+        ELSE 'No'
+    END AS Need_Checking 
       FROM ${csvTableName}
       JOIN errortables
       WHERE ${csvTableName}.id = errortables.parentId AND 
@@ -50,7 +52,7 @@ const DownloadCorrectedCsv = async (req, res) => {
       ${fileId}=errortables.fileId`,
       {
         type: QueryTypes.SELECT,
-      }
+      },
     );
     // const data = await sequelize.query(
     //   `SELECT * FROM ${csvTableName} WHERE id >= ${startIndex}`,

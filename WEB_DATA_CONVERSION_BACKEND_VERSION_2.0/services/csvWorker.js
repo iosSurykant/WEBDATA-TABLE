@@ -19,7 +19,7 @@ const worker = new Worker(
   "csvUpdateQueue",
   async (job) => {
     try {
-      console.log(`Processing job ID: ${job.id} for task: ${job.data.taskId}`);
+      // console.log(`Processing job ID: ${job.id} for task: ${job.data.taskId}`);
 
       const { taskId, updates, userEmail } = job.data;
 
@@ -94,7 +94,7 @@ const worker = new Worker(
       await fs.promises.rename(tempCorrectedFilePath, correctedCsvFilePath);
       await fs.promises.rename(tempErrorFilePath, resolvedErrorFilePath);
 
-      console.log(`Job ID: ${job.id} completed successfully!`);
+      // console.log(`Job ID: ${job.id} completed successfully!`);
       return { message: "Task updated successfully", updatedErrorJsonFile };
     } catch (error) {
       console.error(`Error processing job ID: ${job.id}`, error);

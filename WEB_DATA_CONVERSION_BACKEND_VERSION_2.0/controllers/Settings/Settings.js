@@ -9,7 +9,7 @@ const onCsvBackupHandler = async (req, res) => {
         const csvFolderPath = path.join(__dirname, "../../csvFile");
         const desktopPath = path.join(os.homedir(), "Desktop");
         const backupFolderPath = path.join(desktopPath, "webdata_csv_backup");
-        console.log(csvFolderPath)
+        // console.log(csvFolderPath)
 
         // Check if CSV folder exists
         if (!fs.existsSync(csvFolderPath)) {

@@ -174,7 +174,7 @@ async function saveChunk(chunkDir, chunkIndex, buffer) {
   const chunkFileName = `${chunkIndex}.chunk`;
   const chunkFilePath = path.join(chunkDir, chunkFileName);
 
-  console.log("Saving chunk file to:", chunkFilePath);
+  // console.log("Saving chunk file to:", chunkFilePath);
   await fs.writeFile(chunkFilePath, buffer);
 
   if (!fs.existsSync(chunkFilePath)) {
@@ -193,7 +193,7 @@ async function mergeChunks(chunkDir, uploadDir, zipFileName, totalChunks) {
 
   for (let i = 0; i < totalChunks; i++) {
     const chunkPath = path.join(chunkDir, `${i}.chunk`);
-    console.log("Reading chunk from:", chunkPath);
+    // console.log("Reading chunk from:", chunkPath);
     const data = await fs.readFile(chunkPath);
     const canWrite = writeStream.write(data);
 
@@ -481,7 +481,7 @@ const handleUpload = async (req, res) => {
       if (parseInt(chunkIndex, 10) + 1 === parseInt(totalChunks, 10)) {
         // Save the CSV file only on the last chunk
         if (req.files.csvFile) {
-          console.log("Saving CSV file to:", csvFilePath);
+          // console.log("Saving CSV file to:", csvFilePath);
           await fs.writeFile(csvFilePath, req.files.csvFile[0].buffer);
 
           if (!fs.existsSync(csvFilePath)) {
@@ -570,7 +570,7 @@ const handleUpload = async (req, res) => {
           let columns = null;
 
           for (let i = 0; i < batches.length; i++) {
-            console.log(`Inserting batch ${i + 1} of ${batches.length}`);
+            // console.log(`Inserting batch ${i + 1} of ${batches.length}`);
 
             const batchColumns = await insertDataIntoTable(
               templateTable.csvTableName,

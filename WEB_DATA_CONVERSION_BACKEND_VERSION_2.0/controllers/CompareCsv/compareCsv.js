@@ -176,6 +176,7 @@ async function insertData(groupedArray) {
           parentId: item.parentId,
           fileId: item.fileId,
           indexTracker: index + 1,
+          Need_Checking:false
         });
 
         if (Array.isArray(item.DATA)) {

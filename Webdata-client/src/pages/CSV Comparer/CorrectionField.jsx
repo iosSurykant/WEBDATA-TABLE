@@ -16,6 +16,8 @@ const CorrectionField = ({
   nextHandler,
   currIndex,
   imageFocusHandler,
+  setNeedChecking,
+  needChecking,
 }) => {
   const taskData = JSON.parse(localStorage.getItem("taskdata"));
   const token = JSON.parse(localStorage.getItem("userData"));
@@ -29,7 +31,6 @@ const CorrectionField = ({
   const isUpdatingRef = useRef(false);
 
 
-
   
   useEffect(() => {
     setDataRow(currentData);
@@ -39,7 +40,7 @@ const CorrectionField = ({
     setVisitedCount(0);
     setVisitedRows({});
   }, [currentData]);
-
+  
   const handleVisit = (index) => {
     if (!visitedRows[index]) {
       setVisitedRows((prev) => ({ ...prev, [index]: true }));
@@ -48,7 +49,16 @@ const CorrectionField = ({
   };
 
   // useEffect(() => {
-  //   const PRIMARY = currentData?.PRIMARY;
+    
+  
+  
+  //   setNeedChecking(currentData?.Need_Checking)
+   
+  // }, [currentIndex])
+  
+  
+  // useEffect(() => {
+    //   const PRIMARY = currentData?.PRIMARY;
   //   const Primary_Key = currentData?.DATA?.Primary_Key;
   //   // When filteredData or PRIMARY changes, update the input values
   //   const initialValues = currentData.DATA.reduce((acc, dataItem) => {
@@ -70,21 +80,21 @@ const CorrectionField = ({
         const updatedData = await Promise.all(
           subData.map(async (item) => {
             try {
-              console.log(item);
+              // console.log(item);
               const isFormField = await fetchTemplateFormData(
                 templateId,
-                item.Column_Name
+                item.Column_Name,
               );
               const type = isFormField?.templateData?.fieldType || "formField"; // Use default "formField" if API fails or returns undefined
               return { ...item, type };
             } catch (error) {
               console.error(
                 `Error fetching data for ${item.Column_Name}:`,
-                error
+                error,
               );
               return { ...item, type: "formField" }; // Fallback to "formField"
             }
-          })
+          }),
         );
 
         setUpdatedData(updatedData);
@@ -164,6 +174,7 @@ const CorrectionField = ({
           id: dataItem.id,
           Column_Name: dataItem.Column_Name,
           Corrected: inputValue[dataItem.Column_Name],
+          
         };
       });
       const filtered = mappedData.filter((item) => item.Corrected != null);
@@ -173,14 +184,16 @@ const CorrectionField = ({
         parentId: currentData?.parentId,
         taskId: taskId,
         errorDataId: currentData.id,
+        Need_Checking:needChecking
       };
+      console.log(obj)
 
       const response = await axios.post(
         `${window.SERVER_IP}/csvUpdateData/${taskId}/batch`,
         obj,
         {
           headers: { token: token },
-        }
+        },
       );
       if (response.data.success) {
         toast.success("Corrected Value Updated Successfully");
@@ -189,7 +202,7 @@ const CorrectionField = ({
     } catch (error) {
       console.error(
         "Error updating data:",
-        error?.response?.data?.message || error
+        error?.response?.data?.message || error,
       );
       toast.error(error?.response?.data?.message || "An error occurred");
     } finally {
@@ -197,6 +210,8 @@ const CorrectionField = ({
       isUpdatingRef.current = false;
     }
   };
+
+  console.log(needChecking);
 
   const errorData = updatedeData?.map((dataItem, index) => {
     const key = `${dataItem?.Column_Name?.trim()}`;
@@ -225,8 +240,8 @@ const CorrectionField = ({
               inputValue[key] !== undefined
                 ? inputValue[key]
                 : dataItem?.Corrected
-                ? dataItem?.Corrected
-                : ""
+                  ? dataItem?.Corrected
+                  : ""
             }
             placeholder={dataItem?.Column_Name}
             onChange={(e) => {
@@ -240,7 +255,7 @@ const CorrectionField = ({
               ) {
                 handleInputChange(
                   { ...e, target: { ...e.target, value: input } },
-                  key
+                  key,
                 );
               }
               // handleInputChange(
@@ -263,6 +278,15 @@ const CorrectionField = ({
   return (
     <div className="mx-4 bg-white xl:my-4 px-4 py-2 rounded-md">
       <div className="flex justify-between mb-6 mt-2">
+        <h2 className="text-sm 2xl:text-xl mx-4 font-bold 2xl:pt-1 text-blue-500 bg-blue-200 p-2 rounded-lg border border-blue-400">
+          <input
+            type="checkbox"
+            id="needChecking"
+            checked={needChecking}
+            onChange={(e) => setNeedChecking(e.target.checked)}
+          />
+          <label htmlFor="">Need Checking</label>
+        </h2>
         <h2 className="text-sm 2xl:text-xl mx-4 font-bold 2xl:pt-1 text-blue-500 bg-blue-200 p-2 rounded-lg border border-blue-400">
           {`${currentData?.Primary_Key} (Primary Key)`}
         </h2>

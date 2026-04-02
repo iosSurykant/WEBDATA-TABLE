@@ -50,7 +50,7 @@ const csvUpdateData = async (req, res) => {
   try {
     const { email } = req.user;
     const { taskId } = req.params;
-    const { updated, parentId, errorDataId } = req.body;
+    const { updated, parentId, errorDataId,Need_Checking} = req.body;
 
     if (!updated || !Array.isArray(updated)) {
       return res.status(400).json({ message: "Invalid update data provided" });
@@ -81,9 +81,12 @@ const csvUpdateData = async (req, res) => {
       ...copyObjParsed,
       ...Object.assign({}, ...newData),
     };
+    // console.log(mergedUpdates)
+    console.log(Need_Checking)
 
     // Convert merged object to JSON string
     errorTable.Corrected = JSON.stringify(mergedUpdates);
+    errorTable.Need_Checking = Need_Checking
 
     await errorTable.save();
     for (const update of updated) {

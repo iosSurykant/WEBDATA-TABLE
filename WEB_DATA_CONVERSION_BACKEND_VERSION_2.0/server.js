@@ -55,6 +55,8 @@ const { swaggerUi, swaggerSpec } = require("./swagger");
 //   console.log("✅ Build found, skipping build process.");
 // }
 
+console.log(builtPath)
+
 //middlewares
 app.use(
   cors({

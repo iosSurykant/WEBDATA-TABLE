@@ -16,9 +16,9 @@ exports.updateDuplicate = async (req, res) => {
       });
     }
 
-    console.log("Updating template ID:", templateId);
-    console.log("Row ID:", rowId);
-    console.log("New Data:", updatedData);
+    // console.log("Updating template ID:", templateId);
+    // console.log("Row ID:", rowId);
+    // console.log("New Data:", updatedData);
 
     // 1️⃣ Get the table name from the template
     const template = await Templete.findByPk(templateId);
