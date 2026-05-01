@@ -243,7 +243,10 @@ const compareCsv = async (req, res) => {
       fileId,
     } = req.body;
     let { skippingKey } = req.body;
+
+    console.log('REQ BODY', req.body)
     const template = await Template.findByPk(templateId);
+   
     const tableName = template.csvTableName;
     const fileData = await Files.findByPk(fileId);
     const startIndex = fileData.startIndex;
@@ -252,8 +255,8 @@ const compareCsv = async (req, res) => {
     const [columns] = await sequelize.query(
       `SHOW COLUMNS FROM \`${tableName}\``
     );
-
     const columnNames = columns.map((col) => `\`${col.Field}\``).join(", ");
+    console.log('columnNames', columnNames)
 
     // Now query the table without the 'id' column
     const tableData = await sequelize.query(
@@ -263,6 +266,8 @@ const compareCsv = async (req, res) => {
         type: sequelize.QueryTypes.SELECT,
       }
     );
+
+    // console.log('tableData', tableData)
 
     // // Correct SQL syntax with safe variable injection
     // const tableData = await sequelize.query(
@@ -384,9 +389,11 @@ const compareCsv = async (req, res) => {
     // Convert f2 into a Map for O(1) lookups
 
     const f2Map = new Map(f2.map((item) => [item[primaryKey], item]));
+    // console.log(f2Map)
 
     for (const item1 of f1) {
       const key = item1[primaryKey];
+      // console.log(Object.entries(item1))
 
       // Directly access corresponding object in f2 using the map
       const item2 = f2Map.get(key);
@@ -398,7 +405,7 @@ const compareCsv = async (req, res) => {
 
       for (const [colKey, val1] of Object.entries(item1)) {
         const val2 = item2[colKey];
-
+        if(colKey===imageColName) continue
         // ✅ Check for "*" or blank values in formFields columns
         if (
           formFeilds.includes(colKey) &&
@@ -439,6 +446,9 @@ const compareCsv = async (req, res) => {
         err: "No differences found between the two CSV files.",
       });
     }
+
+    // console.log("diff", diff)
+    // console.log("skippingKey", skippingKey)
 
     // const { resultTable } = await processAndInsertCSV(diff);
     const csvData = parse(diff);
@@ -500,6 +510,7 @@ const compareCsv = async (req, res) => {
     res.set("Content-Disposition", 'attachment; filename="data.csv"');
 
     const groupedArray = groupByPrimaryKey(diff, fileId);
+    console.log('groupedArray',groupedArray)
     const response = await ErrorTable.findAll({
       where: {
         fileId: fileId,

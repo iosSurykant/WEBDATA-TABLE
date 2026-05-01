@@ -46,7 +46,7 @@ const UserCorrectionData = () => {
   const [imageUrls, setImageUrls] = useState([]);
   const [currIndex, setCurrIndex] = useState(1);
   const [currentData, setCurrentData] = useState(null);
-  const [subData, setSubData] = useState(null);
+  const [subData, setSubData] = useState([]);
   const [maximum, setMaximum] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(
     JSON.parse(localStorage.getItem("taskdata")).currentIndex
@@ -266,7 +266,7 @@ const UserCorrectionData = () => {
         }
       );
       setNeedChecking(response?.data?.mainData?.Need_Checking==0?false:true)
-      console.log(response?.data?.mainData?.Need_Checking===0?false:true)
+      console.log(response?.data)
       setCurrentData(response?.data?.mainData);
       setSubData(response?.data?.subData);
       setTotalData(response?.data?.errorCount);
@@ -274,6 +274,7 @@ const UserCorrectionData = () => {
     };
     req();
   }, [currentIndex, currIndex]);
+  console.log(currIndex)
   // const onCsvUpdateHandler = async () => {
   //   if (!modifiedKeys) {
   //     onImageHandler("next", currentIndex, headerData, currentTaskData);
@@ -691,7 +692,7 @@ const UserCorrectionData = () => {
     
   
     
-  }, [currentIndex])
+  }, [currIndex])
   
   return (
     <>

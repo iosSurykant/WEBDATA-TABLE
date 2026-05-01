@@ -72,13 +72,17 @@ const CorrectionField = ({
   useEffect(() => {
     const processTemplateData = async () => {
       try {
-        if (!taskData?.templeteId || subData.length === 0) return;
+        if (!taskData?.templeteId || subData?.length === 0) {
+          setUpdatedData([])
+          return
+        };
+        console.log("process happens")
 
         const templateId = taskData.templeteId;
 
         // Fetch form field data for each COLUMN_NAME in parallel
         const updatedData = await Promise.all(
-          subData.map(async (item) => {
+          subData?.map(async (item) => {
             try {
               // console.log(item);
               const isFormField = await fetchTemplateFormData(
@@ -104,7 +108,7 @@ const CorrectionField = ({
     };
 
     processTemplateData();
-  }, [dataRow, currentData]);
+  }, [dataRow, currentData,currIndex]);
 
   useEffect(() => {
     setVisitedCount(0);
@@ -163,13 +167,16 @@ const CorrectionField = ({
     }));
   };
 
+
+  console.log(subData)
+
   const onUpdateHandler = async () => {
     if (isUpdatingRef.current) return;
     isUpdatingRef.current = true;
     setIsLoading(true);
 
     try {
-      const mappedData = subData.map((dataItem) => {
+      const mappedData = subData?.map((dataItem) => {
         return {
           id: dataItem.id,
           Column_Name: dataItem.Column_Name,
