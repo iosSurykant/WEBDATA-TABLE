@@ -165,36 +165,50 @@ async function insertGroupedArrayIntoTable(groupedArray) {
 
   return { resultTable: tableName, headersArray };
 }
-async function insertData(groupedArray) {
+async function insertData(groupedArray, batchSize = 100) {
   try {
-    await Promise.all(
-      groupedArray.map(async (item, index) => {
-        const errorEntry = await ErrorTable.create({
-          Primary: item.PRIMARY,
-          Primary_Key: item.PRIMARY_KEY,
-          Image_Name: item.IMAGE_NAME,
-          parentId: item.parentId,
-          fileId: item.fileId,
-          indexTracker: index + 1,
-          Need_Checking:false
-        });
+    // Process groupedArray in batches
+    for (let i = 0; i < groupedArray.length; i += batchSize) {
+      const batch = groupedArray.slice(i, i + batchSize);
 
-        if (Array.isArray(item.DATA)) {
-          const aggregatedData = item.DATA.map((dataItem) => ({
-            Column_Name: dataItem.COLUMN_NAME,
-            File_1_data: dataItem.FILE_1_DATA,
-            File_2_data: dataItem.FILE_2_DATA,
-            errorTableId: errorEntry.id,
-          }));
+      // Process all items in the current batch in parallel
+      await Promise.all(
+        batch.map(async (item, batchIndex) => {
+          // Create entry in ErrorTable
+          const errorEntry = await ErrorTable.create({
+            Primary: item.PRIMARY,
+            Primary_Key: item.PRIMARY_KEY,
+            Image_Name: item.IMAGE_NAME,
+            parentId: item.parentId,
+            fileId: item.fileId,
+            indexTracker: i + batchIndex + 1, // Global index
+            Need_Checking: false,
+          });
 
-          await ErrorAggregatedTable.bulkCreate(aggregatedData);
-        }
-      })
-    );
+          // Prepare and bulk insert aggregated data
+          if (Array.isArray(item.DATA) && item.DATA.length > 0) {
+            const aggregatedData = item.DATA.map((dataItem) => ({
+              Column_Name: dataItem.COLUMN_NAME,
+              File_1_data: dataItem.FILE_1_DATA,
+              File_2_data: dataItem.FILE_2_DATA,
+              errorTableId: errorEntry.id,
+            }));
 
-    console.log("Data inserted successfully!");
+            await ErrorAggregatedTable.bulkCreate(aggregatedData);
+          }
+        })
+      );
+
+      console.log(
+        `Batch ${Math.floor(i / batchSize) + 1} completed. ` +
+        `Processed ${Math.min(i + batchSize, groupedArray.length)} / ${groupedArray.length}`
+      );
+    }
+
+    console.log("All data inserted successfully!");
   } catch (error) {
     console.error("Error inserting data:", error.message || error);
+    throw error;
   }
 }
 
@@ -307,25 +321,25 @@ const compareCsv = async (req, res) => {
     const diff = [];
 
     // Logging for debugging
-    for (let i = 0; i < f1.length; i++) {
-      if (isBlank(f1[i][primaryKey])) {
-        return res
-          .status(501)
-          .send({ err: "Primary key cannot be blank in the first CSV file" });
-      }
-    }
+    // for (let i = 0; i < f1.length; i++) {
+    //   if (isBlank(f1[i][primaryKey])) {
+    //     return res
+    //       .status(501)
+    //       .send({ err: "Primary key cannot be blank in the first CSV file" });
+    //   }
+    // }
 
-    for (let j = 0; j < f2.length; j++) {
-      if (f2[j][primaryKey] === undefined) {
-        // console.log(j);
-      }
-      if (isBlank(f2[j][primaryKey])) {
-        return res.status(501).send({
-          err: "Primary key cannot be blank in the second CSV file",
-          f2,
-        });
-      }
-    }
+    // for (let j = 0; j < f2.length; j++) {
+    //   if (f2[j][primaryKey] === undefined) {
+    //     // console.log(j);
+    //   }
+    //   if (isBlank(f2[j][primaryKey])) {
+    //     return res.status(501).send({
+    //       err: "Primary key cannot be blank in the second CSV file",
+    //       f2,
+    //     });
+    //   }
+    // }
     // for (let i = 0; i < f1.length; i++) {
     //   for (let j = 0; j < f2.length; j++) {
     //     // const pkLength = f1[i][primaryKey];
